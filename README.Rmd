@@ -1,0 +1,31 @@
+---
+output:
+  md_document:
+    variant: markdown_github
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# msunfolderr
+
+The goal of msunfolderr is to unfold mass spec raw files.
+
+By that i Mean that there are tools designed to handle only MS1-MS2 data, so as
+a hacky solution one can generate a fake raw file containing only 2 levels of ms
+data to use the tool.
+
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+## basic example code
+```
