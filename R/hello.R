@@ -88,33 +88,6 @@ subset_ms <- function(filepath, precursors, outdir) {
 
 
 
-
-
-spectable <- get_spectrum_table('./inst/extdata/081218-50fmolMix_180813173507.mzML', outdir = 'tmp2')
-msfilters <- get_unique_filters(spectable)
-filtergroups <- get_filter_groups(msfilters, TRUE)
-
-
-
-purrr::map2(names(filtergroups), filtergroups, function(x,y){
-    outdir <- glue::glue('./tmp{x}', x = x)
-    subset_ms('./inst/extdata/081218-50fmolMix_180813173507.mzML',
-              y,
-              outdir)
-
-    mzmlfiles <- dir(outdir, pattern = '.mzML', full.names = TRUE)
-    for (file in mzmlfiles) {
-        reducemslevels(file,
-                       filepath.out = glue::glue(file, '_reduced.mzML'),
-                       minmslevel = 1,
-                       maxmslevel = 3,
-                       reduction = 1)
-
-    }
-})
-
-
-
 reducemslevels <- function(filepath, filepath.out,
                            minmslevel = 1, maxmslevel = 9,
                            reduction = 1, dry = FALSE) {
@@ -151,14 +124,25 @@ reducemslevels <- function(filepath, filepath.out,
 }
 
 
+spectable <- get_spectrum_table('./inst/extdata/081218-50fmolMix_180813173507.mzML', outdir = 'tmp2')
+msfilters <- get_unique_filters(spectable)
+filtergroups <- get_filter_groups(msfilters, TRUE)
 
 
-test_reducemslevel <- function() {
-    testline  <- "          <cvParam cvRef=\"MS\" accession=\"MS:1000511\" name=\"ms level\" value=\"2\"/>"
-    expect <- "          <cvParam cvRef=\"MS\" accession=\"MS:1000511\" name=\"ms level\" value=\"1\"/>"
-    stopifnot(reducemslevelheader(testline) == expect)
-}
-test_reducemslevel()
+purrr::map2(names(filtergroups), filtergroups, function(x,y){
+    outdir <- glue::glue('./tmp{x}', x = x)
+    subset_ms('./inst/extdata/081218-50fmolMix_180813173507.mzML',
+              y,
+              outdir)
 
+    mzmlfiles <- dir(outdir, pattern = '.mzML', full.names = TRUE)
+    for (file in mzmlfiles) {
+        reducemslevels(file,
+                       filepath.out = glue::glue(file, '_reduced.mzML'),
+                       minmslevel = 1,
+                       maxmslevel = 3,
+                       reduction = 1)
 
+    }
+})
 
