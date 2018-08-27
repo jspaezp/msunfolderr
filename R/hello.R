@@ -19,7 +19,8 @@ get_spectrum_table <- function(filepath, outdir = '.') {
     resultsfile <- grep(pattern = "SpectrumTable", results, value = TRUE)
     resultsfile <- gsub(".* Writing file (.*.tsv)", "\\1", resultsfile)
 
-    #return(resultsfile)
+    message(glue::glue("results file will be read from {resultsfile}",
+                       resultsfile =resultsfile))
     stopifnot(file.exists(resultsfile))
     df <- data.table::fread(resultsfile)
     return(df)

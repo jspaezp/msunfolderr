@@ -8,9 +8,11 @@ output:
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
+  root.dir = tempdir(),  
   collapse = TRUE,
   comment = "#>",
-  fig.path = "README-"
+  fig.path = "README-",
+  verbose = TRUE
 )
 ```
 
@@ -34,7 +36,7 @@ require(msunfolderr)
 # work with any vendor format just as well
 datafile <- system.file("extdata", "081218-50fmolMix_180813173507.mzML", package = "msunfolderr")
 spectable <- get_spectrum_table(datafile,
-                                outdir = 'tmp')
+                                outdir = './tmp')
 spectable
 ```
 
