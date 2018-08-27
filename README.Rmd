@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 The goal of msunfolderr is to unfold mass spec raw files.
 
-By that i Mean that there are tools designed to handle only MS1-MS2 data, so as
+By that I Mean that there are tools designed to handle only MS1-MS2 data, so as
 a hacky solution one can generate a fake raw file containing only 2 levels of ms
 data to use the tool.
 
@@ -27,5 +27,50 @@ data to use the tool.
 This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
-## basic example code
+require(msunfolderr)
+
+# Initially we get the information on all the ms scans from the file.
+# since the backend of this is the proteowizard sorftware tools, it SHOULD
+# work with any vendor format just as well
+datafile <- system.file("extdata", "081218-50fmolMix_180813173507.mzML", package = "msunfolderr")
+spectable <- get_spectrum_table(datafile,
+                                outdir = 'tmp')
+spectable
 ```
+
+```{r}
+msfilters <- get_unique_filters(spectable)
+msfilters # These are all the ms filters that are contained in the selected file
+```
+
+
+```{r}
+filtergroups <- get_filter_groups(msfilters, TRUE)
+filtergroups # These would be the MS2-MS3 "pairs"
+```
+
+
+```{r}
+purrr::map2(names(filtergroups), filtergroups, function(x,y){
+    outdir <- glue::glue('./tmp{x}', x = x)
+    subset_ms(datafile,
+              y,
+              outdir)
+
+    mzmlfiles <- dir(outdir, pattern = '.mzML', full.names = TRUE)
+    for (file in mzmlfiles) {
+        reducemslevels(file,
+                       filepath.out = glue::glue(file, '_reduced.mzML'),
+                       minmslevel = 1,
+                       maxmslevel = 3,
+                       reduction = 1)
+
+    }
+})
+```
+
+
+```{r}
+system2('ls','tmp*.*', stdout = TRUE)
+```
+

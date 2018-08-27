@@ -20,6 +20,7 @@ get_spectrum_table <- function(filepath, outdir = '.') {
     resultsfile <- gsub(".* Writing file (.*.tsv)", "\\1", resultsfile)
 
     #return(resultsfile)
+    stopifnot(file.exists(resultsfile))
     df <- data.table::fread(resultsfile)
     return(df)
 }
@@ -123,26 +124,4 @@ reducemslevels <- function(filepath, filepath.out,
     close(con2)
 }
 
-
-spectable <- get_spectrum_table('./inst/extdata/081218-50fmolMix_180813173507.mzML', outdir = 'tmp2')
-msfilters <- get_unique_filters(spectable)
-filtergroups <- get_filter_groups(msfilters, TRUE)
-
-
-purrr::map2(names(filtergroups), filtergroups, function(x,y){
-    outdir <- glue::glue('./tmp{x}', x = x)
-    subset_ms('./inst/extdata/081218-50fmolMix_180813173507.mzML',
-              y,
-              outdir)
-
-    mzmlfiles <- dir(outdir, pattern = '.mzML', full.names = TRUE)
-    for (file in mzmlfiles) {
-        reducemslevels(file,
-                       filepath.out = glue::glue(file, '_reduced.mzML'),
-                       minmslevel = 1,
-                       maxmslevel = 3,
-                       reduction = 1)
-
-    }
-})
 
